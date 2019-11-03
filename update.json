@@ -1,0 +1,10 @@
+{
+    "homepage": "https://github.com/RakSrinaNa/ItemPiping",
+    "changelog": "https://github.com/RakSrinaNa/ItemPiping/blob/1.14.4/CHANGELOG.md",
+    "1.14.4": {
+    },
+    "promos": {
+        "1.14.4-latest": "1.0.4",
+        "1.14.4-recommended": "1.0.4"
+    }
+}

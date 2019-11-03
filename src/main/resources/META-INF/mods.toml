@@ -1,0 +1,28 @@
+modLoader="javafml"
+loaderVersion="[28,)"
+issueTrackerURL="https://github.com/RakSrinaNa/ItemPiping/issues"
+displayURL="https://github.com/RakSrinaNa/ItemPiping"
+#displayURL="https://www.curseforge.com/minecraft/mc-mods/falling-tree"
+#logoFile="logo.png"
+# credits=""
+authors="RakSrinaNa"
+
+[[mods]] #mandatory
+	modId="item_piping"
+	version="${file.jarVersion}"
+	displayName="ItemPiping"
+	updateJSONURL="https://raw.githubusercontent.com/RakSrinaNa/ItemPiping/1.14.4/update.json"
+	description=''' '''
+
+[[dependencies.item_piping]]
+    modId="forge"
+    mandatory=true
+    versionRange="[28.1.26,)"
+    ordering="NONE"
+	side="BOTH"
+[[dependencies.item_piping]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.14.4]"
+    ordering="NONE"
+    side="BOTH"
