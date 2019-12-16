@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " I ",
+    " PI",
+    "I  "
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "P": {
+      "tag": "item_piping:colored_pipes"
+    }
+  },
+  "result": {
+    "item": "item_piping:wrench"
+  }
+}

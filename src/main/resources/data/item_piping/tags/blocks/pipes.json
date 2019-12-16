@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "#item_piping:colored_pipes",
+    "item_piping:importer_pipe"
+  ]
+}

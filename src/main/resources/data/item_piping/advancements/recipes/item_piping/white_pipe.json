@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "item_piping:white_pipe"
+    ]
+  },
+  "criteria": {
+    "glass": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "minecraft:glass"
+          }
+        ]
+      }
+    },
+    "iron_ingot": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "minecraft:iron_ingot"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "item_piping:white_pipe"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "glass",
+      "iron_ingot",
+      "has_the_recipe"
+    ]
+  ]
+}

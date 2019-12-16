@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "minecraft:blue_dye"
+    },
+    {
+      "tag": "item_piping:colored_pipes"
+    }
+  ],
+  "result": {
+    "item": "item_piping:blue_pipe"
+  }
+}

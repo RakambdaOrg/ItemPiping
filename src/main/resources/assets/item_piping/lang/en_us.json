@@ -1,4 +1,21 @@
 {
   "itemGroup.item_piping": "Item Piping",
-  "block.item_piping.pipe": "Pipe"
+  "block.item_piping.importer_pipe": "Importer pipe",
+  "block.item_piping.black_pipe": "Black pipe",
+  "block.item_piping.blue_pipe": "Blue pipe",
+  "block.item_piping.brown_pipe": "Brown pipe",
+  "block.item_piping.cyan_pipe": "Cyan pipe",
+  "block.item_piping.gray_pipe": "Gray pipe",
+  "block.item_piping.green_pipe": "Green pipe",
+  "block.item_piping.light_blue_pipe": "Light blue pipe",
+  "block.item_piping.light_gray_pipe": "Light gray pipe",
+  "block.item_piping.lime_pipe": "Lime pipe",
+  "block.item_piping.magenta_pipe": "Magenta pipe",
+  "block.item_piping.orange_pipe": "Orange pipe",
+  "block.item_piping.pink_pipe": "Pink pipe",
+  "block.item_piping.purple_pipe": "Purple pipe",
+  "block.item_piping.red_pipe": "Red pipe",
+  "block.item_piping.white_pipe": "White pipe",
+  "block.item_piping.yellow_pipe": "Yellow pipe",
+  "item.item_piping.wrench": "Wrench"
 }

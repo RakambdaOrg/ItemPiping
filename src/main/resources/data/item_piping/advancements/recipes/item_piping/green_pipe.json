@@ -1,0 +1,77 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "item_piping:green_pipe"
+    ]
+  },
+  "criteria": {
+    "pipe": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "item_piping:white_pipe"
+          },
+          {
+            "item": "item_piping:orange_pipe"
+          },
+          {
+            "item": "item_piping:magenta_pipe"
+          },
+          {
+            "item": "item_piping:light_blue_pipe"
+          },
+          {
+            "item": "item_piping:yellow_pipe"
+          },
+          {
+            "item": "item_piping:lime_pipe"
+          },
+          {
+            "item": "item_piping:pink_pipe"
+          },
+          {
+            "item": "item_piping:gray_pipe"
+          },
+          {
+            "item": "item_piping:light_gray_pipe"
+          },
+          {
+            "item": "item_piping:cyan_pipe"
+          },
+          {
+            "item": "item_piping:purple_pipe"
+          },
+          {
+            "item": "item_piping:blue_pipe"
+          },
+          {
+            "item": "item_piping:brown_pipe"
+          },
+          {
+            "item": "item_piping:green_pipe"
+          },
+          {
+            "item": "item_piping:red_pipe"
+          },
+          {
+            "item": "item_piping:black_pipe"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "item_piping:green_pipe"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "pipe",
+      "has_the_recipe"
+    ]
+  ]
+}

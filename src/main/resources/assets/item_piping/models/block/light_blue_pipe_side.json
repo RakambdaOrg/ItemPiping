@@ -1,0 +1,7 @@
+{
+  "parent": "item_piping:block/pipe_side",
+  "textures": {
+    "0": "item_piping:block/light_blue_pipe",
+    "particle": "item_piping:block/light_blue_pipe"
+  }
+}

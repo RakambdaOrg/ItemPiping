@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " P ",
+    " H "
+  ],
+  "key": {
+    "P": {
+      "tag": "item_piping:colored_pipes"
+    },
+    "H": {
+      "item": "minecraft:hopper"
+    }
+  },
+  "result": {
+    "item": "item_piping:importer_pipe"
+  }
+}

@@ -60,12 +60,12 @@ minecraft {
 
     runs {
         client {
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.markers', 'SCAN,REGISTRIES' //REGISTRYDUMP
             property 'forge.logging.console.level', 'debug'
             workingDirectory project.file('run-client')
 
             mods {
-                edit_sign {
+                item_piping {
                     source sourceSets.main
                 }
             }
@@ -76,7 +76,21 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
             workingDirectory project.file('run-server')
             mods {
-                edit_sign {
+                item_piping {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        data {
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.console.level', 'debug'
+            workingDirectory project.file('run')
+
+            args '--mod', 'item_piping', '--all', '--output', file('src/generated/resources/')
+
+            mods {
+                item_piping {
                     source sourceSets.main
                 }
             }
