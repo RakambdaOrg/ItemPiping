@@ -1,5 +1,7 @@
 package fr.raksrinana.itempiping.blocks.pipe.pipe;
 
+import fr.raksrinana.itempiping.api.IWrenchable;
+import fr.raksrinana.itempiping.blocks.pipe.routing.Network;
 import fr.raksrinana.itempiping.blocks.pipe.routing.Router;
 import fr.raksrinana.itempiping.registry.TileEntityRegistry;
 import net.minecraft.block.*;
@@ -10,25 +12,30 @@ import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUseContext;
 import net.minecraft.pathfinding.PathType;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.Optional;
 
-public abstract class PipeBlock extends SixWayBlock implements IBucketPickupHandler, ILiquidContainer{
+public abstract class PipeBlock extends SixWayBlock implements IBucketPickupHandler, ILiquidContainer, IWrenchable{
 	protected static final DyeColor UNIVERSAL_COLOR = DyeColor.WHITE;
 	
 	public PipeBlock(){
@@ -104,13 +111,14 @@ public abstract class PipeBlock extends SixWayBlock implements IBucketPickupHand
 	}
 	
 	public boolean canPipeConnect(@Nonnull IBlockReader world, @Nonnull BlockPos pos, @Nonnull Direction direction){
-		BlockState otherState = world.getBlockState(pos.offset(direction));
+		BlockPos otherPos = pos.offset(direction);
+		BlockState otherState = world.getBlockState(otherPos);
 		Block otherBlock = otherState.getBlock();
 		if(otherBlock instanceof PipeBlock){
 			final PipeBlock otherPipe = (PipeBlock) otherBlock;
 			DyeColor color = getColor();
 			DyeColor otherColor = otherPipe.getColor();
-			return otherPipe.canConnectOnSide(direction.getOpposite()) && (color == UNIVERSAL_COLOR || otherColor == UNIVERSAL_COLOR || color == otherColor);
+			return canConnectOnSide(world, otherPos, direction.getOpposite()) && (color == UNIVERSAL_COLOR || otherColor == UNIVERSAL_COLOR || color == otherColor) && !getPipeTileEntity(world, pos).map(te -> te.isSideDisabled(direction)).orElse(false);
 		}
 		TileEntity tileEntity = world.getTileEntity(pos.offset(direction));
 		if(tileEntity != null){
@@ -120,8 +128,8 @@ public abstract class PipeBlock extends SixWayBlock implements IBucketPickupHand
 		return false;
 	}
 	
-	protected boolean canConnectOnSide(@Nonnull Direction side){
-		return true;
+	protected static boolean canConnectOnSide(@Nonnull IBlockReader world, @Nonnull BlockPos pos, @Nonnull Direction side){
+		return !getPipeTileEntity(world, pos).map(te -> te.isSideDisabled(side)).orElse(false);
 	}
 	
 	protected boolean isUniversalColor(){
@@ -181,5 +189,60 @@ public abstract class PipeBlock extends SixWayBlock implements IBucketPickupHand
 	@Nonnull
 	public IFluidState getFluidState(BlockState state){
 		return state.get(BlockStateProperties.WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
+	}
+	
+	@Override
+	public ActionResultType onWrench(ItemUseContext context){
+		BlockPos pos = context.getPos();
+		World world = context.getWorld();
+		BlockState state = world.getBlockState(pos);
+		Vec3d relative = context.getHitVec().subtract(pos.getX(), pos.getY(), pos.getZ());
+		Direction side = getClickedConnection(relative);
+		if(Objects.nonNull(side)){
+			BlockPos otherPos = pos.offset(side);
+			BlockState otherState = world.getBlockState(otherPos);
+			Block otherBlock = otherState.getBlock();
+			TileEntity otherPipeEntity = world.getTileEntity(otherPos);
+			if(Objects.nonNull(otherPipeEntity) && otherPipeEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side.getOpposite()).isPresent()){
+				disableConnection(world, pos, state, side);
+				if(otherBlock instanceof PipeBlock){
+					((PipeBlock) otherBlock).disableConnection(world, otherPos, otherState, side.getOpposite());
+				}
+				return ActionResultType.SUCCESS;
+			}
+		}
+		return ActionResultType.PASS;
+	}
+	
+	protected void disableConnection(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull Direction side){
+		getPipeTileEntity(world, pos).ifPresent(te -> {
+			te.disabledSide(side);
+			BlockState newState = state.with(FACING_TO_PROPERTY_MAP.get(side), false);
+			world.setBlockState(pos, newState, Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.UPDATE_NEIGHBORS);
+			Router.getNetworkFor(world, pos).ifPresent(Network::invalidate);
+		});
+	}
+	
+	@Nullable
+	private static Direction getClickedConnection(Vec3d relative){
+		if(relative.x < 0.25){
+			return Direction.WEST;
+		}
+		if(relative.x > 0.75){
+			return Direction.EAST;
+		}
+		if(relative.y < 0.25){
+			return Direction.DOWN;
+		}
+		if(relative.y > 0.75){
+			return Direction.UP;
+		}
+		if(relative.z < 0.25){
+			return Direction.NORTH;
+		}
+		if(relative.z > 0.75){
+			return Direction.SOUTH;
+		}
+		return null;
 	}
 }

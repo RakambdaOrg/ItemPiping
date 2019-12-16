@@ -5,20 +5,28 @@ import fr.raksrinana.itempiping.blocks.pipe.routing.Router;
 import fr.raksrinana.itempiping.registry.TileEntityRegistry;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class PipeTileEntity extends TileEntity{
+	private static final String NBT_DISABLED_SIDES = "disabledSides";
 	private final PipeInventoryHandler inventoryHandler;
 	private final LazyOptional<IItemHandler> lazyInventoryHandler;
+	private Set<Direction> disabledSides;
 	
 	public PipeTileEntity(){
 		this(TileEntityRegistry.PIPE);
@@ -28,6 +36,7 @@ public class PipeTileEntity extends TileEntity{
 		super(tileEntityTypeIn);
 		this.inventoryHandler = new PipeInventoryHandler(this);
 		this.lazyInventoryHandler = LazyOptional.of(() -> this.inventoryHandler);
+		this.disabledSides = new HashSet<>();
 	}
 	
 	@Override
@@ -37,6 +46,18 @@ public class PipeTileEntity extends TileEntity{
 			return this.getInventoryHandlerOptional().cast();
 		}
 		return super.getCapability(cap, side);
+	}
+	
+	public boolean isSideDisabled(@Nonnull Direction side){
+		return this.disabledSides.contains(side);
+	}
+	
+	public void disabledSide(@Nonnull Direction side){
+		this.disabledSides.add(side);
+	}
+	
+	public void enableSide(@Nonnull Direction side){
+		this.disabledSides.remove(side);
 	}
 	
 	protected PipeInventoryHandler getInventoryHandler(){
@@ -62,5 +83,42 @@ public class PipeTileEntity extends TileEntity{
 	@Nonnull
 	public Optional<Network> getNetwork(){
 		return Optional.ofNullable(getWorld()).flatMap(world -> Router.getNetworkFor(world, pos));
+	}
+	
+	@Nullable
+	@Override
+	public SUpdateTileEntityPacket getUpdatePacket(){
+		CompoundNBT tag = new CompoundNBT();
+		tag.putIntArray(NBT_DISABLED_SIDES, disabledSides.stream().mapToInt(Direction::getIndex).toArray());
+		return new SUpdateTileEntityPacket(pos, 1, tag);
+	}
+	
+	@Override
+	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt){
+		World world = getWorld();
+		CompoundNBT tag = pkt.getNbtCompound();
+		if(tag.contains(NBT_DISABLED_SIDES)){
+			Set<Direction> newDirections = Arrays.stream(tag.getIntArray(NBT_DISABLED_SIDES)).mapToObj(Direction::byIndex).collect(Collectors.toSet());
+			if(!Objects.equals(disabledSides, newDirections)){
+				disabledSides = newDirections;
+				if(Objects.nonNull(world)){
+					world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
+				}
+			}
+		}
+	}
+	
+	@Override
+	public void read(CompoundNBT tag){
+		super.read(tag);
+		if(tag.contains(NBT_DISABLED_SIDES)){
+			disabledSides = Arrays.stream(tag.getIntArray(NBT_DISABLED_SIDES)).mapToObj(Direction::byIndex).collect(Collectors.toSet());
+		}
+	}
+	
+	@Override
+	public CompoundNBT write(CompoundNBT tag){
+		tag.putIntArray(NBT_DISABLED_SIDES, disabledSides.stream().mapToInt(Direction::getIndex).toArray());
+		return super.write(tag);
 	}
 }

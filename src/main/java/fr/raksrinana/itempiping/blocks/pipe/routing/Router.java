@@ -153,7 +153,7 @@ public class Router{
 			return Arrays.stream(Direction.values()).filter(direction -> {
 				final BlockPos otherPos = pos.offset(direction);
 				Block otherBlock = world.getBlockState(otherPos).getBlock();
-				return otherBlock instanceof PipeBlock && pipe.canPipeConnect(world, pos, direction);
+				return otherBlock instanceof PipeBlock && PipeBlock.getConnection(state, direction);
 			}).map(pos::offset).map(aroundPos -> getNetworkFor(world, aroundPos)).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
 		}
 		return new ArrayList<>();

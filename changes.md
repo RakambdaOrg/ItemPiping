@@ -1,0 +1,1 @@
+- Allow to disable connections with wrench.
