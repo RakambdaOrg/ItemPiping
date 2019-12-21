@@ -96,13 +96,18 @@ public abstract class PipeBlock extends SixWayBlock implements IBucketPickupHand
 		if(Objects.isNull(state)){
 			state = this.getDefaultState();
 		}
+		state = preGetStateForPlacement(context, state);
 		IBlockReader world = context.getWorld();
 		BlockPos pos = context.getPos();
 		IFluidState fluidState = context.getWorld().getFluidState(context.getPos());
 		state = state.with(BlockStateProperties.WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
 		for(Direction direction : FACING_TO_PROPERTY_MAP.keySet()){
-			state = state.with(FACING_TO_PROPERTY_MAP.get(direction), canPipeConnect(world, pos, direction));
+			state = state.with(FACING_TO_PROPERTY_MAP.get(direction), canPipeConnect(world, pos, direction, state));
 		}
+		return state;
+	}
+	
+	public BlockState preGetStateForPlacement(@Nonnull BlockItemUseContext context, @Nonnull BlockState state){
 		return state;
 	}
 	
@@ -110,15 +115,13 @@ public abstract class PipeBlock extends SixWayBlock implements IBucketPickupHand
 		return state.get(FACING_TO_PROPERTY_MAP.get(side));
 	}
 	
-	public boolean canPipeConnect(@Nonnull IBlockReader world, @Nonnull BlockPos pos, @Nonnull Direction direction){
+	public boolean canPipeConnect(@Nonnull IBlockReader world, @Nonnull BlockPos pos, @Nonnull Direction direction, @Nonnull BlockState state){
 		BlockPos otherPos = pos.offset(direction);
 		BlockState otherState = world.getBlockState(otherPos);
 		Block otherBlock = otherState.getBlock();
 		if(otherBlock instanceof PipeBlock){
 			final PipeBlock otherPipe = (PipeBlock) otherBlock;
-			DyeColor color = getColor();
-			DyeColor otherColor = otherPipe.getColor();
-			return canConnectOnSide(world, otherPos, direction.getOpposite()) && (color == UNIVERSAL_COLOR || otherColor == UNIVERSAL_COLOR || color == otherColor) && !getPipeTileEntity(world, pos).map(te -> te.isSideDisabled(direction)).orElse(false);
+			return canConnectOnSide(world, otherPos, direction.getOpposite()) && (isUniversalColor() || otherPipe.isUniversalColor() || Objects.equals(getColor(), otherPipe.getColor())) && !getPipeTileEntity(world, pos).map(te -> te.isSideDisabled(direction)).orElse(false);
 		}
 		TileEntity tileEntity = world.getTileEntity(pos.offset(direction));
 		if(tileEntity != null){
@@ -147,7 +150,7 @@ public abstract class PipeBlock extends SixWayBlock implements IBucketPickupHand
 			worldIn.getPendingFluidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickRate(worldIn));
 		}
 		BooleanProperty property = FACING_TO_PROPERTY_MAP.get(facing);
-		return stateIn.with(property, canPipeConnect(worldIn, currentPos, facing));
+		return stateIn.with(property, canPipeConnect(worldIn, currentPos, facing, stateIn));
 	}
 	
 	public static Optional<PipeTileEntity> getPipeTileEntity(@Nonnull IBlockReader blockReader, @Nonnull BlockPos pos){

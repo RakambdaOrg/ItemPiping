@@ -28,11 +28,11 @@ public class Network{
 	}
 	
 	@Nonnull
-	public RoutingResult getDestinationsFor(@Nonnull World world, @Nonnull BlockPos startPos, @Nonnull ItemStack itemStack){
-		return this.routes.computeIfAbsent(startPos, pos -> exploreDestinations(world, pos, itemStack));
+	public RoutingResult getDestinationsFor(@Nonnull World world, @Nonnull BlockPos startPos, @Nonnull ItemStack itemStack, @Nonnull Direction sideIn){
+		return this.routes.computeIfAbsent(startPos, pos -> exploreDestinations(world, pos, itemStack, sideIn));
 	}
 	
-	private RoutingResult exploreDestinations(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull ItemStack itemStack){
+	private RoutingResult exploreDestinations(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull ItemStack itemStack, @Nonnull Direction sideIn){
 		RoutingResult result = new RoutingResult();
 		Set<BlockPos> explored = new HashSet<>();
 		Queue<Pair<BlockPos, Integer>> queue = new PriorityQueue<>(Comparator.comparingInt(Pair::getSecond));
@@ -46,11 +46,14 @@ public class Network{
 				if(pipes.contains(explorePos)){
 					PipeBlock.getPipeTileEntity(world, explorePos).ifPresent(explorePipeTileEntity -> {
 						for(Direction direction : Direction.values()){
+							if(Objects.equals(explorePos, pos) && Objects.equals(direction, sideIn)){
+								continue;
+							}
 							if(explorePipeTileEntity.canExtract(itemStack, world.getBlockState(explorePos), direction)){
 								final BlockPos nextPos = explorePos.offset(direction);
 								final Direction face = direction.getOpposite();
 								final PipeDestination destination = new PipeDestination(nextPos, face);
-								if(!Objects.equals(explorePos, pos) && this.externalConnections.contains(destination)){
+								if(this.externalConnections.contains(destination)){
 									result.addRoute(new Route(destination, distance + 1, 1));
 								}
 								else if(pipes.contains(nextPos)){

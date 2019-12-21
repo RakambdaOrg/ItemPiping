@@ -4,6 +4,7 @@ import fr.raksrinana.itempiping.blocks.pipe.routing.Route;
 import fr.raksrinana.itempiping.blocks.pipe.routing.RoutingResult;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -13,7 +14,7 @@ import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Objects;
 
-public class PipeInventoryHandler extends ItemStackHandler{
+public abstract class PipeInventoryHandler extends ItemStackHandler{
 	private final PipeTileEntity pipeEntity;
 	
 	public PipeInventoryHandler(@Nonnull PipeTileEntity pipeTileEntity){
@@ -34,7 +35,7 @@ public class PipeInventoryHandler extends ItemStackHandler{
 			ItemStack remainingStack = stack.copy();
 			World world = this.pipeEntity.getWorld();
 			if(Objects.nonNull(world)){
-				RoutingResult result = network.getDestinationsFor(world, this.pipeEntity.getPos(), stack.copy());
+				RoutingResult result = network.getDestinationsFor(world, this.pipeEntity.getPos(), stack.copy(), getInsertedSide());
 				Collection<Route> routes = result.getRoutes();
 				for(Route route : routes){
 					final TileEntity te = world.getTileEntity(route.getDestination().getPos());
@@ -50,6 +51,8 @@ public class PipeInventoryHandler extends ItemStackHandler{
 			return remainingStack.copy();
 		}).orElse(stack.copy());
 	}
+	
+	protected abstract Direction getInsertedSide();
 	
 	@Nonnull
 	private ItemStack dispatchStackToItemHandler(@Nonnull IItemHandler handler, @Nonnull ItemStack stack, boolean simulate){

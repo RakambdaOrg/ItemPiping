@@ -24,8 +24,8 @@ import java.util.stream.Collectors;
 
 public class PipeTileEntity extends TileEntity{
 	private static final String NBT_DISABLED_SIDES = "disabledSides";
-	private final PipeInventoryHandler inventoryHandler;
-	private final LazyOptional<IItemHandler> lazyInventoryHandler;
+	private final Map<Direction, IItemHandler> inventoryHandlers;
+	private final Map<Direction, LazyOptional<IItemHandler>> lazyInventoryHandlers;
 	private Set<Direction> disabledSides;
 	
 	public PipeTileEntity(){
@@ -34,8 +34,8 @@ public class PipeTileEntity extends TileEntity{
 	
 	public PipeTileEntity(TileEntityType<?> tileEntityTypeIn){
 		super(tileEntityTypeIn);
-		this.inventoryHandler = new PipeInventoryHandler(this);
-		this.lazyInventoryHandler = LazyOptional.of(() -> this.inventoryHandler);
+		this.inventoryHandlers = Arrays.stream(Direction.values()).collect(Collectors.toMap(dir -> dir, dir -> new SidedPipeInventoryHandler(this, dir)));
+		this.lazyInventoryHandlers = Arrays.stream(Direction.values()).collect(Collectors.toMap(dir -> dir, dir -> LazyOptional.of(() -> this.inventoryHandlers.get(dir))));
 		this.disabledSides = new HashSet<>();
 	}
 	
@@ -43,7 +43,7 @@ public class PipeTileEntity extends TileEntity{
 	@Nonnull
 	public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side){
 		if(cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && side != null){
-			return this.getInventoryHandlerOptional().cast();
+			return this.getInventoryHandlerOptional(side).cast();
 		}
 		return super.getCapability(cap, side);
 	}
@@ -60,8 +60,8 @@ public class PipeTileEntity extends TileEntity{
 		this.disabledSides.remove(side);
 	}
 	
-	protected PipeInventoryHandler getInventoryHandler(){
-		return this.inventoryHandler;
+	protected IItemHandler getInventoryHandler(@Nonnull Direction side){
+		return this.inventoryHandlers.get(side);
 	}
 	
 	public boolean canExtract(@Nonnull ItemStack itemStack, @Nonnull BlockState state, @Nonnull Direction side){
@@ -76,8 +76,8 @@ public class PipeTileEntity extends TileEntity{
 		return PipeBlock.getConnection(state, side);
 	}
 	
-	protected LazyOptional<IItemHandler> getInventoryHandlerOptional(){
-		return this.lazyInventoryHandler;
+	protected LazyOptional<IItemHandler> getInventoryHandlerOptional(@Nonnull Direction side){
+		return this.lazyInventoryHandlers.get(side);
 	}
 	
 	@Nonnull

@@ -56,19 +56,19 @@ public class ImporterPipeTileEntity extends PipeTileEntity implements ITickableT
 		World world = this.getWorld();
 		BlockPos pos = this.getPos();
 		if(Objects.nonNull(world)){
-			Direction direction = ImporterPipeBlock.getImportingSide(world.getBlockState(pos));
-			Direction pullDirection = direction.getOpposite();
-			TileEntity te = world.getTileEntity(pos.offset(direction));
+			Direction importingSide = ImporterPipeBlock.getImportingSide(world.getBlockState(pos));
+			Direction targetPullSide = importingSide.getOpposite();
+			TileEntity te = world.getTileEntity(pos.offset(importingSide));
 			if(Objects.nonNull(te)){
-				return te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, pullDirection).map(iItemHandler -> {
+				return te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, targetPullSide).map(iItemHandler -> {
 					for(int slotIndex = 0; slotIndex < iItemHandler.getSlots(); slotIndex++){
 						ItemStack extractedStack = iItemHandler.extractItem(slotIndex, 64, false);
 						if(!extractedStack.isEmpty()){
-							ItemStack notInserted = this.getInventoryHandler().insertItem(0, extractedStack.copy(), false);
+							ItemStack notInserted = this.getInventoryHandler(importingSide).insertItem(0, extractedStack.copy(), false);
 							if(!notInserted.isEmpty()){
 								ItemStack notInsertedBack = iItemHandler.insertItem(slotIndex, notInserted.copy(), false);
 								if(!notInsertedBack.isEmpty()){
-									WorldUtils.popItemstackInWorld(world, pos, direction, notInsertedBack);
+									WorldUtils.popItemstackInWorld(world, pos, importingSide, notInsertedBack);
 								}
 							}
 							if(notInserted.getCount() < extractedStack.getCount()){

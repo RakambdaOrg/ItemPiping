@@ -20,7 +20,7 @@ import javax.annotation.Nonnull;
 public class ItemPiping{
 	public static final String MOD_ID = "item_piping";
 	public static final String MOD_NAME = "ItemPiping";
-	public static final String VERSION = "1.1.1";
+	public static final String VERSION = "1.1.2";
 	public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
 	public static final ItemGroup CREATIVE_TAB = new ItemGroup(ItemPiping.MOD_ID){
 		@Override
