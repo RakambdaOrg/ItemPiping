@@ -2,13 +2,14 @@
     "homepage": "https://github.com/RakSrinaNa/ItemPiping",
     "changelog": "https://github.com/RakSrinaNa/ItemPiping/blob/1.14.4/CHANGELOG.md",
     "1.14.4": {
+        "1.1.2": "https://github.com/RakSrinaNa/ItemPiping/blob/1.14.4/CHANGELOG.md",
         "1.1.1": "https://github.com/RakSrinaNa/ItemPiping/blob/1.14.4/CHANGELOG.md",
         "1.1.0": "https://github.com/RakSrinaNa/ItemPiping/blob/1.14.4/CHANGELOG.md",
         "1.0.1": "https://github.com/RakSrinaNa/ItemPiping/blob/1.14.4/CHANGELOG.md",
         "1.0.0": "https://github.com/RakSrinaNa/ItemPiping/blob/1.14.4/CHANGELOG.md"
     },
     "promos": {
-        "1.14.4-latest": "1.1.1",
-        "1.14.4-recommended": "1.1.1"
+        "1.14.4-latest": "1.1.2",
+        "1.14.4-recommended": "1.1.2"
     }
 }

@@ -1,3 +1,6 @@
+## [1.14.4-1.1.2] - 2019-12-21
+- Works when output is connected to the same pipe as the input.
+
 ## [1.14.4-1.1.1] - 2019-12-16
 - Allow to disable connections with wrench.
 

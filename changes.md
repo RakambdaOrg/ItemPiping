@@ -1,1 +1,1 @@
-- Allow to disable connections with wrench.
+- Works when output is connected to the same pipe as the input.
