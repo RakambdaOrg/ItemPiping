@@ -1,11 +1,8 @@
 {
     "homepage": "https://github.com/RakSrinaNa/ItemPiping",
-    "changelog": "https://github.com/RakSrinaNa/ItemPiping/blob/1.15.1/CHANGELOG.md",
-    "1.15.1": {
-        "1.1.2": "https://github.com/RakSrinaNa/ItemPiping/blob/1.15.1/CHANGELOG.md"
+    "changelog": "https://github.com/RakSrinaNa/ItemPiping/blob/1.15.2/CHANGELOG.md",
+    "1.15.2": {
     },
     "promos": {
-        "1.15.1-latest": "1.1.2",
-        "1.15.1-recommended": "1.1.2"
     }
 }
